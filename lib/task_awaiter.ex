@@ -18,10 +18,10 @@ defmodule TaskAwaiter do
   end
 
   def handle_cast({:accept_result, result}, %TaskAwaiter{state: awaiter_state, result_acceptor: result_acceptor, condition_verifier: condition_verifier, awaiter_notifier: awaiter_notifier} = state) do
-    new_awaiter_state = result |> result_acceptor.()
+    new_awaiter_state = awaiter_state |> result_acceptor.(result)
     if new_awaiter_state |> condition_verifier.() do
       awaiter_notifier.(new_awaiter_state)
     end
-    {:noreply, state}
+    {:noreply, %{state|state: new_awaiter_state}}
   end
 end
